@@ -54,7 +54,6 @@ train:
       id: '${parameters.copy_from_exp_id}'
       namespace: "${parameters.namespace}"
     project: '${parameters.krylov_project}'
-    ## experiment_name: item_reco_training
     skip_status_check: False
     timeout: '${sys.timedelta(hours=7)}'
     metrics:

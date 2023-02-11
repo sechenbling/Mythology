@@ -1,0 +1,37 @@
+transfer:
+  dag_component:
+    - train
+    - evaluation
+    - post
+  dag_order: train->evaluation->post
+train:
+  name: train
+  stages:
+    start: train_start_task
+    end: train_end_task
+  checker: cn.scut.app.util.transfer.checker.impl.TrainChecker
+  navigator: cn.scut.app.util.transfer.navigator.impl.TrainNavigator
+  strategies:
+    krylov: cn.scut.app.util.transfer.transformer.train.KrylovTrainTransformer
+    others: cn.scut.app.util.transfer.transformer.train.NewTrainTransformer
+    unknown: cn.scut.app.util.transfer.transformer.train.UnknownTrainTransformer
+    experiment: cn.scut.app.util.transfer.transformer.train.ExpSelectTransformer
+evaluation:
+  name: evaluation
+  stages:
+    start: eval_start_task
+    end: eval_end_task
+  checker: cn.scut.app.util.transfer.checker.impl.EvaluationChecker
+  navigator: cn.scut.app.util.transfer.navigator.impl.EvaluationNavigator
+  strategies:
+    train: cn.scut.app.util.transfer.transformer.evaluation.TrainEvalTransformer
+    customized: cn.scut.app.util.transfer.transformer.evaluation.CustomizedTransformer
+    dag: cn.scut.app.util.transfer.transformer.evaluation.DagEvalTransformer
+    # model_cus: cn.scut.app.util.transfer.transformer.evaluation.ModelCusTransformer
+    unknown: cn.scut.app.util.transfer.transformer.evaluation.UnknownEvalTransformer
+post:
+  name: post_analysis
+  navigator: cn.scut.app.util.transfer.navigator.impl.PostNavigator
+  strategies:
+    customized: cn.scut.app.util.transfer.transformer.evaluation.CustomizedTransformer
+    unknown: cn.scut.app.util.transfer.transformer.post.UnknownPostTransformer

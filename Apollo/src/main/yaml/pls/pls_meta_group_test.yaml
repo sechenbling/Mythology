@@ -1,9 +1,16 @@
+train_start_task:
+  task_type: "bash"
+  settings:
+    bash_command: "echo '== TASK WITH ID train START =='"
+  depends_on: []
+  group_id: "train"
 train_krylov_start_task:
   task_type: "bash"
   settings:
     bash_command: "echo '== TASK WITH ID train_krylov START =='"
-  depends_on: []
-  group_id: "train_krylov"
+  depends_on:
+  - "train_start_task"
+  group_id: "train.train_krylov"
 submodel1_krylov_retrain:
   disable: false
   task_type: "krylov_retrain"
@@ -40,7 +47,7 @@ submodel1_krylov_retrain:
     model_train_0.args_4: "item_ad_rate_training_template_v1_1_gain.json"
   depends_on:
   - "train_krylov_start_task"
-  group_id: "train_krylov"
+  group_id: "train.train_krylov"
 submodel2_krylov_retrain:
   disable: false
   task_type: "krylov_retrain"
@@ -77,7 +84,7 @@ submodel2_krylov_retrain:
     model_train_0.args_4: "item_ad_rate_training_template_v2.json"
   depends_on:
   - "train_krylov_start_task"
-  group_id: "train_krylov"
+  group_id: "train.train_krylov"
 submodel3_krylov_retrain:
   disable: false
   task_type: "krylov_retrain"
@@ -114,7 +121,7 @@ submodel3_krylov_retrain:
     model_train_0.args_4: "item_ad_rate_training_template_v1_1.json"
   depends_on:
   - "train_krylov_start_task"
-  group_id: "train_krylov"
+  group_id: "train.train_krylov"
 train_krylov_end_task:
   task_type: "bash"
   settings:
@@ -123,4 +130,11 @@ train_krylov_end_task:
   - "submodel2_krylov_retrain"
   - "submodel3_krylov_retrain"
   - "submodel1_krylov_retrain"
-  group_id: "train_krylov"
+  group_id: "train.train_krylov"
+train_end_task:
+  task_type: "bash"
+  settings:
+    bash_command: "echo '== TASK WITH ID train END =='"
+  depends_on:
+  - "train_krylov_end_task"
+  group_id: "train"
