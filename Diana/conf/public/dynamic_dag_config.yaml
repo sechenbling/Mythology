@@ -1,0 +1,76 @@
+# All timeout is second
+dag:
+  required_parameters: dag_id,scheduler,owner,version,tags,start_date,email,tasks
+  none_allowed_parameters: scheduler
+operators:
+  dummy:
+    import_lib: airflow.operators.dummy.DummyOperator
+    import_adaptor: empty_adaptor
+    timeout: 10
+  bash:
+    import_lib: ebay.airflow.ads.operators.bash.BashOperator
+    import_adaptor: empty_adaptor
+    timeout: 60
+  python:
+    import_lib: ebay.airflow.ads.operators.python.PythonOperator
+    import_adaptor: python_adaptor
+    timeout: 60
+  hadoop:
+    import_lib: ebay.airflow.ads.operators.hadoop.HadoopOperator
+    import_adaptor: hadoop_adaptor
+    timeout: 1800
+  spark:
+    import_lib: ebay.airflow.ads.operators.spark.SparkOperator
+    import_adaptor: hadoop_adaptor
+    timeout: 1800
+  spark2:
+    import_lib: ebay.airflow.ads.operators.spark2.SparkOperator2
+    import_adaptor: spark2_adaptor
+    timeout: 1800
+  pyspark:
+    import_lib: ebay.airflow.ads.operators.pyspark.PySparkOperator
+    import_adaptor: pyspark_adaptor
+    timeout: 1800
+  pykrylov:
+    import_lib: ebay.airflow.ads.operators.pykrylov_operator.PyKrylovOperator
+    import_adaptor: pykrylov_adapter
+    timeout: 3600
+  krylov_retrain:
+    import_lib: ebay.airflow.ads.operators.krylov_retrain_operator.KrylovRetrainOperator
+    import_adaptor: krylov_retrain_adapter
+    timeout: 3600
+  email:
+    import_lib: airflow.operators.email.EmailOperator
+    import_adaptor: empty_adaptor
+    timeout: 30
+  git_sync:
+    import_lib: ebay.airflow.ads.operators.git_sync.GitSyncOperator
+    import_adaptor: git_sync_adapter
+    timeout: 60
+  krylov_read_metrics:
+    import_lib: ebay.airflow.ads.operators.pykrylov_read_metrics_operator.PyKrylovReadMetricsOperator
+    import_adaptor: krylov_read_metrics_adaptor
+    timeout: 60
+  shepherd_metrics:
+    import_lib: ebay.airflow.ads.operators.shepherd_metrics_operator.ShepherdMetricsOperator
+    import_adaptor: shepherd_metrics_adaptor
+    timeout: 1800
+  darwin_deploy:
+    import_lib: ebay.airflow.ads.operators.darwin_deploy_operator.DarwinDeployOperator
+    import_adaptor: darwin_deploy_adaptor
+    timeout: 60
+  darwin_create:
+    import_lib: ebay.airflow.ads.operators.darwin_model_create_operator.DarwinModelCreateOperator
+    import_adaptor: darwin_model_create_adaptor
+    timeout: 60
+sensors:
+  localfs:
+    timeout: 300
+    poke_interval: 5
+    reschedule_interval: 60
+  hdfs:
+    timeout: 300
+    interval: 30
+  nuobject:
+    timeout: 300
+    interval: 30
