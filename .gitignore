@@ -25,23 +25,5 @@
 /nbdist/
 /.nb-gradle/
 
-### Raptor IO
-
-**/temp_persist_config_*.xml
-**/ConfigRoot/*
-**/clientconfig
-**/enevelopeapi
-**/esamscache
-**/nameservice
-**/raptor.xml
-**/SensitiveParameters.xml
-**/ThreadLocalFlushBean.xml
-**/TomcatThreadPoolSizeBean
-**/XslTransformObjectCacheConfig64.xml
-/.envrc
-OpenTelemetryConfigBean
-TrustFabricInjectionHandlerConfigBean
-TrustFabricHandlerConfigBean
-
 ### Java env settings
 .java-version
