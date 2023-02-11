@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "ammo_project", indexes = {
+@Table(name = "project", indexes = {
     @Index(name = "projectUniqueIndex", columnList = "projectName", unique = true)
 })
 public class ProjectEntity extends AbstractBaseEntity {

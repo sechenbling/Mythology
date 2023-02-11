@@ -13,7 +13,7 @@ public class ProjectRequest {
   @NotNull
   private String       domain;
   private String       description;
-  private String       VERSION;
+  private String       version;
   @NotNull
   @NotBlank
   private String      createBy;
