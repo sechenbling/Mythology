@@ -1,0 +1,219 @@
+metadata:
+  project: "pls_suggested_adrate"
+  models:
+    - model:
+        - submodel1
+        - submodel2
+        - submodel3
+
+owner: BreeLynn
+tags:
+  - test
+email: 2040095448@qq.com
+scheduler: None
+version: 0.0.0
+start_date: '${sys.datetime(2023, 1, 1)}'
+domain: scut
+
+parameters:
+  username: s_adsguidance
+  cluster: tess94
+  token: OEgKMw4SUycpaUYVHAgSCQoBGlhYGURDXF1MUUJRWls
+  namespace: ebay
+  copy_from_exp_id: "f51cf1e9-c345-44c8-ad92-9a6f36c01d0e"
+  krylov_project: pls-model
+  date: '${sys.execute_date(%Y%m%d) - 5d}'
+  input_path: '/apps/hdmi-ebayadvertising/guidance/item_ad_rate/feature_gen/10pct_bid_reweight/${parameters.date}'
+  run_id: '{{ run_id }}'
+  run_id_str: '${sys.execute_timestamp(%Y%m%dT%H%M%S)}'
+  item_reco_model_path_prefix: /apps/hdmi-ebayadvertising/dmp/qa/experiment/guidance/item_ad_rate/model/${parameters.run_id_str}
+  item_ad_rate_model_path_prefix: /apps/hdmi-ebayadvertising/dmp/qa/experiment/guidance/item_ad_rate/model/v2/${parameters.run_id_str}
+  item_ad_rate_for_low_adrate_model_path_prefix: /apps/hdmi-ebayadvertising/dmp/qa/experiment/guidance/item_ad_rate/model/v1-1/${parameters.run_id_str}
+  item_reco_model_path: ${parameters.item_reco_model_path_prefix}/${parameters.date}
+  item_ad_rate_model_path: ${parameters.item_ad_rate_model_path_prefix}/${parameters.date}
+  item_ad_rate_for_low_adrate_model_path: ${parameters.item_ad_rate_for_low_adrate_model_path_prefix}/${parameters.date}
+  item_ad_rate_scoring_base_path: /apps/hdmi-ebayadvertising/dmp/qa/guidance/item_ad_rate/${parameters.run_id_str}/scoring/
+  item_ad_rate_scoring_beyond_itemreco_base_path: ${parameters.item_ad_rate_scoring_base_path}/beyond_itemreco/
+  item_ad_rate_scoring_v1_1_base_path: ${parameters.item_ad_rate_scoring_base_path}/v1-1/
+  batch_account: b_qa_ebayadvertising
+  batch_queue: hdlq-business-ads-guidance-high-mem
+  inference_jar_path: 'viewfs://apollo-rno/user/b_ads_data/pp/polaris-0.0.1-SNAPSHOT/default/polaris-0.0.1-SNAPSHOT.jar'
+  item_ima_base_path: /apps/hdmi-ebayadvertising/guidance/cdl/item_ima/
+  item-reco-model-name: item_reco.xgb
+  ad-rate-reco-model-name: item_ad_rate.xgb
+  candidate-label: v1_itemreco
+  horizon-date: '${sys.execute_date(%Y%m%d) - 4d}'
+train:
+  type: krylov
+  settings:
+    account:
+      username: '${parameters.username}'
+      cluster: '${parameters.cluster}'
+      token: '${parameters.token}'
+    copy_from_experiment:
+      id: '${parameters.copy_from_exp_id}'
+      namespace: "${parameters.namespace}"
+    project: '${parameters.krylov_project}'
+    ## experiment_name: item_reco_training
+    skip_status_check: False
+    timeout: '${sys.timedelta(hours=7)}'
+    metrics:
+      - test_auc
+      - test_f1
+      - test_precision
+      - test_recall
+    assets:
+      pattern: '*.pkg'
+    ems_params:
+      model_train_0.args_1: {{model_id}}
+      model_train_0.args_2: ${parameters.input_path}
+      model_train_0.args_3: {{model_path}}
+      model_train_0.args_4: {{config_path}}
+    labels:
+      - ${parameters.timestamp}
+  render:
+    submodel1:
+      model_id: submodel1
+      model_path: '${parameters.item_reco_model_path}'
+      config_path: 'item_ad_rate_training_template_v1_1_gain.json'
+    submodel2:
+      model_id: submodel2
+      model_path: '${parameters.item_ad_rate_model_path}'
+      config_path: 'item_ad_rate_training_template_v2.json'
+    submodel3:
+      model_id: submodel3
+      model_path: '${parameters.item_ad_rate_for_low_adrate_model_path}'
+      config_path: 'item_ad_rate_training_template_v1_1.json'
+evaluation:
+  krylov_metrics_check:
+    source: train
+    metrics:
+      - metricsName: "test_auc"
+        expression: "value > production*(1-0.05) & value > production*(1-0.05)"
+        default:
+          production: 3
+      - metricsName: "test_f1"
+        expression: "value > production*(1-0.05)"
+      - metricsName: "test_precision"
+        expression: "value < production"
+      - metricsName: "test_recall"
+        expression: "value > production/10"
+  adrate_coverage_metrics:
+    source: customized
+    level: dag
+    template:
+      adrate_scoring_template:
+        task_type: spark2
+        settings:
+          argument_prefix: --
+          batch_account: '${parameters.batch_account}'
+          cluster: 'apollo-rno'
+          skip_status_check: False
+          app_name: adrate_scoring
+          class_name: com.ebay.ads.guidance.polaris.jobs.item_adrate.v1.ItemAdRateScoringJobApp
+          spark_queue: '${parameters.batch_queue}'
+          app_path: '${parameters.inference_jar_path}'
+          spark_conf:
+            spark.executor.memoryOverhead: 3048
+            spark.executor.cores: 3
+            spark.executor.memory: 21g
+            spark.dynamicAllocation.maxExecutors: 1000
+            spark.network.timeout: 300'
+            spark.sql.shuffle.partitions: 18000
+            spark.sql.broadcastTimeout: 1000
+          timeout: '${sys.timedelta(hours=2)}'
+        arguments:
+          item-ima-base-input-path: '${parameters.item_ima_base_path}'
+          scoring-base-output-path: '${parameters.item_ad_rate_scoring_base_path}'
+          item-reco-model-base-input-path: '${parameters.item_reco_model_path_prefix}'
+          ad-rate-reco-model-base-input-path: '${parameters.item_ad_rate_model_path_prefix}'
+          item-reco-model-name: '${parameters.item-reco-model-name}'
+          ad-rate-reco-model-name: '${parameters.ad-rate-reco-model-name}'
+          horizon-date: {{horizon_date}}
+          adrate-version: 'v2'
+          candidate-label: '${parameters.candidate-label}'
+          num-coalesce-partitions: 1000
+        depends_on: [ ]
+      adrate_scoring_shepherd_template:
+        disable: true
+        task_type: shepherd_metrics
+        settings:
+          rule_name: "pls_guidance_offline_evaluation"
+          sql_name: "pls_offline_evaluation"
+          variables:
+            "VERSION": 'item_ad_rate_scoring_${parameters.timestamp}'
+            "MODEL_HDFS_PATH": '${parameters.item_ad_rate_scoring_base_path}/output/{{ horizon_date }}'
+          metrics:
+            - cnt:
+                alias: 'v2_model_item_coverage_cnt_{{ horizon_date }}'
+            - adrate_avg:
+                alias: 'v2_model_reco_average_adrate_{{ horizon_date }}'
+    render:
+      index,horizon_date:
+        - 1,${parameters.date}
+        - 2,${parameters.date}
+    tasks:
+      adrate_scoring_{{index}}:
+        task_type: spark2
+        inherit: adrate_scoring_template
+        depends_on: [ ]
+      adrate_scoring_shepherd_{{index}}:
+        task_type: shepherd_metrics
+        inherit: adrate_scoring_shepherd_template
+        depends_on:
+          - adrate_scoring_{{index}}
+      adrate_scoring_beyond_{{index}}:
+        task_type: spark2
+        inherit: adrate_scoring_template
+        arguments:
+          scoring-base-output-path: '${parameters.item_ad_rate_scoring_beyond_itemreco_base_path}'
+          candidate-label: 'beyond_v1_itemreco'
+          ad-rate-reco-score-threshold: 0.34
+        depends_on: [ ]
+      adrate_scoring_beyond_shepherd_{{index}}:
+        task_type: shepherd_metrics
+        inherit: adrate_scoring_shepherd_template
+        settings:
+          variables:
+            "VERSION": 'item_ad_rate_scoring_${parameters.timestamp}'
+            "MODEL_HDFS_PATH": '${parameters.item_ad_rate_scoring_beyond_itemreco_base_path}/output/{{ horizon_date }}'
+            metrics:
+              - cnt:
+                  alias: 'v2_beyond_model_item_coverage_cnt_{{ index }}'
+              - adrate_avg:
+                  alias: 'v2_beyond_model_reco_average_adrate_{{ index }}'
+        depends_on:
+          - adrate_scoring_beyond_{{index}}
+      adrate_scoring_v1_1_{{index}}:
+        task_type: spark2
+        inherit: adrate_scoring_template
+        arguments:
+          scoring-base-output-path: '${parameters.item_ad_rate_scoring_v1_1_base_path}'
+          item-reco-model-base-input-path: '${parameters.item_ad_rate_for_low_adrate_model_path_prefix}'
+          ad-rate-reco-model-base-input-path: '${parameters.item_ad_rate_for_low_adrate_model_path_prefix}'
+          adrate-version: 'v1_1'
+          candidate-label: 'low_adrate'
+          num-coalesce-partitions: 400
+          item-reco-score-threshold: 0
+        depends_on: [ ]
+      adrate_scoring_v1_1_shepherd_{{index}}:
+        task_type: shepherd_metrics
+        inherit: adrate_scoring_shepherd_template
+        settings:
+          variables:
+            "VERSION": 'item_ad_rate_scoring_${parameters.timestamp}'
+            "MODEL_HDFS_PATH": '${parameters.item_ad_rate_scoring_v1_1_base_path}/output/{{ horizon_date }}'
+          metrics:
+            - cnt:
+                alias: 'v1_1_model_item_coverage_cnt_{{ index }}'
+            - adrate_avg:
+                alias: 'v1_1_model_reco_average_adrate_{{ index }}'
+        depends_on:
+          - adrate_scoring_v1_1_{{index}}
+  overall_analysis_check:
+    source: dag
+    metrics:
+      - metricsName: "v2_beyond_model_item_coverage_cnt_1"
+        expression: "value > production"
+        default:
+          production: 230000000

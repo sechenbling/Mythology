@@ -1,0 +1,542 @@
+dag_id: "pls_suggested_adrate"
+scheduler: "None"
+owner: "BreeLynn"
+tags:
+- "test"
+email: "2040095448@qq.com"
+version: "0.0.0"
+start_date: "${sys.datetime(2023, 1, 1)}"
+callback:
+  start_on_success: "submodules.ammo.util.ammo_callback.start_on_success_callback"
+  start_on_failure: "demo.demo.start_on_failure_callback"
+  start_on_retry: "demo.demo.start_on_failure_callback"
+  end_on_success: "demo.demo.end_on_failure_callback"
+  end_on_failure: "demo.demo.end_on_failure_callback"
+  end_on_retry: "demo.demo.end_on_failure_callback"
+  dag_on_success: "demo.demo.dag_on_failure_callback"
+  dag_on_failure: "demo.demo.dag_on_failure_callback"
+ammo_params:
+  project_name: "pls_suggested_adrate"
+domain: "scut"
+parameters:
+  username: "s_adsguidance"
+  cluster: "tess94"
+  token: "OEgKMw4SUycpaUYVHAgSCQoBGlhYGURDXF1MUUJRWls"
+  namespace: "ebay"
+  copy_from_exp_id: "f51cf1e9-c345-44c8-ad92-9a6f36c01d0e"
+  krylov_project: "pls-model"
+  date: "${sys.execute_date(%Y%m%d) - 5d}"
+  input_path: "/apps/hdmi-ebayadvertising/guidance/item_ad_rate/feature_gen/10pct_bid_reweight/${parameters.date}"
+  run_id: "{{ run_id }}"
+  run_id_str: "${sys.execute_timestamp(%Y%m%dT%H%M%S)}"
+  item_reco_model_path_prefix: "/apps/hdmi-ebayadvertising/dmp/qa/experiment/guidance/item_ad_rate/model/${parameters.run_id_str}"
+  item_ad_rate_model_path_prefix: "/apps/hdmi-ebayadvertising/dmp/qa/experiment/guidance/item_ad_rate/model/v2/${parameters.run_id_str}"
+  item_ad_rate_for_low_adrate_model_path_prefix: "/apps/hdmi-ebayadvertising/dmp/qa/experiment/guidance/item_ad_rate/model/v1-1/${parameters.run_id_str}"
+  item_reco_model_path: "${parameters.item_reco_model_path_prefix}/${parameters.date}"
+  item_ad_rate_model_path: "${parameters.item_ad_rate_model_path_prefix}/${parameters.date}"
+  item_ad_rate_for_low_adrate_model_path: "${parameters.item_ad_rate_for_low_adrate_model_path_prefix}/${parameters.date}"
+  item_ad_rate_scoring_base_path: "/apps/hdmi-ebayadvertising/dmp/qa/guidance/item_ad_rate/${parameters.run_id_str}/scoring/"
+  item_ad_rate_scoring_beyond_itemreco_base_path: "${parameters.item_ad_rate_scoring_base_path}/beyond_itemreco/"
+  item_ad_rate_scoring_v1_1_base_path: "${parameters.item_ad_rate_scoring_base_path}/v1-1/"
+  batch_account: "b_qa_ebayadvertising"
+  batch_queue: "hdlq-business-ads-guidance-high-mem"
+  inference_jar_path: "viewfs://apollo-rno/user/b_ads_data/pp/polaris-0.0.1-SNAPSHOT/default/polaris-0.0.1-SNAPSHOT.jar"
+  item_ima_base_path: "/apps/hdmi-ebayadvertising/guidance/cdl/item_ima/"
+  item-reco-model-name: "item_reco.xgb"
+  ad-rate-reco-model-name: "item_ad_rate.xgb"
+  candidate-label: "v1_itemreco"
+  horizon-date: "${sys.execute_date(%Y%m%d) - 4d}"
+tasks:
+  train_start_task:
+    task_type: "bash"
+    settings:
+      bash_command: "echo '== TASK WITH ID train START =='"
+    depends_on: []
+    group_id: "train"
+  train_krylov_start_task:
+    task_type: "bash"
+    settings:
+      bash_command: "echo '== TASK WITH ID train_krylov START =='"
+    depends_on:
+    - "train_start_task"
+    group_id: "train.train_krylov"
+  submodel1_krylov_retrain:
+    disable: false
+    task_type: "krylov_retrain"
+    settings:
+      account:
+        username: "${parameters.username}"
+        cluster: "${parameters.cluster}"
+        token: "${parameters.token}"
+      copy_from_experiment:
+        id: "${parameters.copy_from_exp_id}"
+        namespace: "${parameters.namespace}"
+      project: "${parameters.krylov_project}"
+      skip_status_check: false
+      timeout: "${sys.timedelta(hours=7)}"
+      metrics:
+      - "test_auc"
+      - "test_f1"
+      - "test_precision"
+      - "test_recall"
+      assets:
+        pattern: "*.pkg"
+      labels:
+      - "${parameters.timestamp}"
+      experiment_name: "submodel1_krylov_retrain"
+      ammo:
+        project_name: "pls_suggested_adrate"
+        model_name: "model"
+        model_instance: "submodel1"
+        try_id: 0
+    arguments:
+      model_train_0.args_1: "submodel1"
+      model_train_0.args_2: "${parameters.input_path}"
+      model_train_0.args_3: "${parameters.item_reco_model_path}"
+      model_train_0.args_4: "item_ad_rate_training_template_v1_1_gain.json"
+    depends_on:
+    - "train_krylov_start_task"
+    group_id: "train.train_krylov"
+  submodel2_krylov_retrain:
+    disable: false
+    task_type: "krylov_retrain"
+    settings:
+      account:
+        username: "${parameters.username}"
+        cluster: "${parameters.cluster}"
+        token: "${parameters.token}"
+      copy_from_experiment:
+        id: "${parameters.copy_from_exp_id}"
+        namespace: "${parameters.namespace}"
+      project: "${parameters.krylov_project}"
+      skip_status_check: false
+      timeout: "${sys.timedelta(hours=7)}"
+      metrics:
+      - "test_auc"
+      - "test_f1"
+      - "test_precision"
+      - "test_recall"
+      assets:
+        pattern: "*.pkg"
+      labels:
+      - "${parameters.timestamp}"
+      experiment_name: "submodel2_krylov_retrain"
+      ammo:
+        project_name: "pls_suggested_adrate"
+        model_name: "model"
+        model_instance: "submodel2"
+        try_id: 0
+    arguments:
+      model_train_0.args_1: "submodel2"
+      model_train_0.args_2: "${parameters.input_path}"
+      model_train_0.args_3: "${parameters.item_ad_rate_model_path}"
+      model_train_0.args_4: "item_ad_rate_training_template_v2.json"
+    depends_on:
+    - "train_krylov_start_task"
+    group_id: "train.train_krylov"
+  submodel3_krylov_retrain:
+    disable: false
+    task_type: "krylov_retrain"
+    settings:
+      account:
+        username: "${parameters.username}"
+        cluster: "${parameters.cluster}"
+        token: "${parameters.token}"
+      copy_from_experiment:
+        id: "${parameters.copy_from_exp_id}"
+        namespace: "${parameters.namespace}"
+      project: "${parameters.krylov_project}"
+      skip_status_check: false
+      timeout: "${sys.timedelta(hours=7)}"
+      metrics:
+      - "test_auc"
+      - "test_f1"
+      - "test_precision"
+      - "test_recall"
+      assets:
+        pattern: "*.pkg"
+      labels:
+      - "${parameters.timestamp}"
+      experiment_name: "submodel3_krylov_retrain"
+      ammo:
+        project_name: "pls_suggested_adrate"
+        model_name: "model"
+        model_instance: "submodel3"
+        try_id: 0
+    arguments:
+      model_train_0.args_1: "submodel3"
+      model_train_0.args_2: "${parameters.input_path}"
+      model_train_0.args_3: "${parameters.item_ad_rate_for_low_adrate_model_path}"
+      model_train_0.args_4: "item_ad_rate_training_template_v1_1.json"
+    depends_on:
+    - "train_krylov_start_task"
+    group_id: "train.train_krylov"
+  train_krylov_end_task:
+    task_type: "bash"
+    settings:
+      bash_command: "echo '== TASK WITH ID train_krylov END =='"
+    depends_on:
+    - "submodel2_krylov_retrain"
+    - "submodel3_krylov_retrain"
+    - "submodel1_krylov_retrain"
+    group_id: "train.train_krylov"
+  train_end_task:
+    task_type: "bash"
+    settings:
+      bash_command: "echo '== TASK WITH ID train END =='"
+    depends_on:
+    - "train_krylov_end_task"
+    group_id: "train"
+  eval_start_task:
+    task_type: "bash"
+    settings:
+      bash_command: "echo '== TASK WITH ID eval START =='"
+    depends_on:
+    - "train_end_task"
+    group_id: "eval"
+  eval_train_start_task:
+    task_type: "bash"
+    settings:
+      bash_command: "echo '== TASK WITH ID eval_train START =='"
+    depends_on:
+    - "eval_start_task"
+    group_id: "eval.eval_train"
+  submodel1_krylov_retrain_metrics:
+    task_type: "krylov_read_metrics"
+    settings:
+      metrics:
+      - "test_auc"
+      - "test_f1"
+      - "test_precision"
+      - "test_recall"
+      venv: "krylov_env.tar.gz"
+      experiment_id: "{{ ti.xcom_pull(task_ids=\"submodel1_krylov_retrain\", key=\"experiment_id\" )}}"
+      ammo: "flag_bit"
+    disable: false
+    depends_on:
+    - "eval_train_start_task"
+    group_id: "eval.eval_train"
+  submodel2_krylov_retrain_metrics:
+    task_type: "krylov_read_metrics"
+    inherit: "submodel1_krylov_retrain_metrics"
+    ammo: "flag_bit"
+    settings:
+      experiment_id: "{{ ti.xcom_pull(task_ids=\"submodel2_krylov_retrain\", key=\"experiment_id\" )}}"
+    disable: false
+    depends_on:
+    - "eval_train_start_task"
+    group_id: "eval.eval_train"
+  submodel3_krylov_retrain_metrics:
+    task_type: "krylov_read_metrics"
+    inherit: "submodel1_krylov_retrain_metrics"
+    ammo: "flag_bit"
+    settings:
+      experiment_id: "{{ ti.xcom_pull(task_ids=\"submodel3_krylov_retrain\", key=\"experiment_id\" )}}"
+    disable: false
+    depends_on:
+    - "eval_train_start_task"
+    group_id: "eval.eval_train"
+  submodel1_krylov_retrain_health_check:
+    task_type: "python"
+    settings:
+      python_callable: "submodules.ammo.util.ammo_util.experiment_health_check"
+      timeout: "${sys.timedelta(minutes=1)}"
+    arguments:
+      experiment_id: "{{ ti.xcom_pull(task_ids= \"submodel1_krylov_retrain\", key=\"experiment_id\")}}"
+      health_checks:
+      - metricsName: "test_auc"
+        expression: "value > production*(1-0.05) & value > production*(1-0.05)"
+        placeholder:
+          production: 3
+      - metricsName: "test_f1"
+        expression: "value > production*(1-0.05)"
+      - metricsName: "test_precision"
+        expression: "value < production"
+      - metricsName: "test_recall"
+        expression: "value > production/10"
+    disable: false
+    depends_on:
+    - "submodel1_krylov_retrain_metrics"
+    group_id: "eval.eval_train"
+  submodel2_krylov_retrain_health_check:
+    inherit: "submodel1_krylov_retrain_health_check"
+    disable: false
+    task_type: "python"
+    arguments:
+      experiment_id: "{{ ti.xcom_pull(task_ids= \"submodel2_krylov_retrain\", key=\"experiment_id\")}}"
+    depends_on:
+    - "submodel2_krylov_retrain_metrics"
+    group_id: "eval.eval_train"
+  submodel3_krylov_retrain_health_check:
+    inherit: "submodel1_krylov_retrain_health_check"
+    disable: false
+    task_type: "python"
+    arguments:
+      experiment_id: "{{ ti.xcom_pull(task_ids= \"submodel3_krylov_retrain\", key=\"experiment_id\")}}"
+    depends_on:
+    - "submodel3_krylov_retrain_metrics"
+    group_id: "eval.eval_train"
+  eval_train_end_task:
+    task_type: "bash"
+    settings:
+      bash_command: "echo '== TASK WITH ID eval_train END =='"
+    depends_on:
+    - "submodel3_krylov_retrain_health_check"
+    - "submodel1_krylov_retrain_health_check"
+    - "submodel2_krylov_retrain_health_check"
+    group_id: "eval.eval_train"
+  eval_dag_start_task:
+    task_type: "bash"
+    settings:
+      bash_command: "echo '== TASK WITH ID eval_dag START =='"
+    depends_on:
+    - "eval_train_end_task"
+    group_id: "eval.eval_dag"
+  adrate_scoring_template:
+    task_type: "spark2"
+    settings:
+      argument_prefix: "--"
+      batch_account: "${parameters.batch_account}"
+      cluster: "apollo-rno"
+      skip_status_check: false
+      app_name: "adrate_scoring"
+      class_name: "com.ebay.ads.guidance.polaris.jobs.item_adrate.v1.ItemAdRateScoringJobApp"
+      spark_queue: "${parameters.batch_queue}"
+      app_path: "${parameters.inference_jar_path}"
+      spark_conf:
+        spark.executor.memoryOverhead: 3048
+        spark.executor.cores: 3
+        spark.executor.memory: "21g"
+        spark.dynamicAllocation.maxExecutors: 1000
+        spark.network.timeout: "300'"
+        spark.sql.shuffle.partitions: 18000
+        spark.sql.broadcastTimeout: 1000
+      timeout: "${sys.timedelta(hours=2)}"
+    arguments:
+      item-ima-base-input-path: "${parameters.item_ima_base_path}"
+      scoring-base-output-path: "${parameters.item_ad_rate_scoring_base_path}"
+      item-reco-model-base-input-path: "${parameters.item_reco_model_path_prefix}"
+      ad-rate-reco-model-base-input-path: "${parameters.item_ad_rate_model_path_prefix}"
+      item-reco-model-name: "${parameters.item-reco-model-name}"
+      ad-rate-reco-model-name: "${parameters.ad-rate-reco-model-name}"
+      horizon-date: "${parameters.date}"
+      adrate-version: "v2"
+      candidate-label: "${parameters.candidate-label}"
+      num-coalesce-partitions: 1000
+    depends_on:
+    - "eval_dag_start_task"
+    disable: true
+    group_id: "eval.eval_dag"
+  adrate_scoring_shepherd_template:
+    disable: true
+    task_type: "shepherd_metrics"
+    settings:
+      rule_name: "pls_guidance_offline_evaluation"
+      sql_name: "pls_offline_evaluation"
+      variables:
+        VERSION: "item_ad_rate_scoring_${parameters.timestamp}"
+        MODEL_HDFS_PATH: "${parameters.item_ad_rate_scoring_base_path}/output/${parameters.date}"
+      metrics:
+      - cnt:
+          alias: "v2_model_item_coverage_cnt_${parameters.date}"
+      - adrate_avg:
+          alias: "v2_model_reco_average_adrate_${parameters.date}"
+    depends_on:
+    - "eval_dag_start_task"
+    group_id: "eval.eval_dag"
+  adrate_scoring_1:
+    task_type: "spark2"
+    inherit: "adrate_scoring_template"
+    depends_on:
+    - "eval_dag_start_task"
+    disable: false
+    group_id: "eval.eval_dag"
+  adrate_scoring_shepherd_1:
+    task_type: "shepherd_metrics"
+    inherit: "adrate_scoring_shepherd_template"
+    depends_on:
+    - "adrate_scoring_1"
+    disable: false
+    group_id: "eval.eval_dag"
+  adrate_scoring_beyond_1:
+    task_type: "spark2"
+    inherit: "adrate_scoring_template"
+    arguments:
+      scoring-base-output-path: "${parameters.item_ad_rate_scoring_beyond_itemreco_base_path}"
+      candidate-label: "beyond_v1_itemreco"
+      ad-rate-reco-score-threshold: 0.34
+    depends_on:
+    - "eval_dag_start_task"
+    disable: false
+    group_id: "eval.eval_dag"
+  adrate_scoring_beyond_shepherd_1:
+    task_type: "shepherd_metrics"
+    inherit: "adrate_scoring_shepherd_template"
+    settings:
+      variables:
+        VERSION: "item_ad_rate_scoring_${parameters.timestamp}"
+        MODEL_HDFS_PATH: "${parameters.item_ad_rate_scoring_beyond_itemreco_base_path}/output/${parameters.date}"
+        metrics:
+        - cnt:
+            alias: "v2_beyond_model_item_coverage_cnt_1"
+        - adrate_avg:
+            alias: "v2_beyond_model_reco_average_adrate_1"
+    depends_on:
+    - "adrate_scoring_beyond_1"
+    disable: false
+    group_id: "eval.eval_dag"
+  adrate_scoring_v1_1_1:
+    task_type: "spark2"
+    inherit: "adrate_scoring_template"
+    arguments:
+      scoring-base-output-path: "${parameters.item_ad_rate_scoring_v1_1_base_path}"
+      item-reco-model-base-input-path: "${parameters.item_ad_rate_for_low_adrate_model_path_prefix}"
+      ad-rate-reco-model-base-input-path: "${parameters.item_ad_rate_for_low_adrate_model_path_prefix}"
+      adrate-version: "v1_1"
+      candidate-label: "low_adrate"
+      num-coalesce-partitions: 400
+      item-reco-score-threshold: 0
+    depends_on:
+    - "eval_dag_start_task"
+    disable: false
+    group_id: "eval.eval_dag"
+  adrate_scoring_v1_1_shepherd_1:
+    task_type: "shepherd_metrics"
+    inherit: "adrate_scoring_shepherd_template"
+    settings:
+      variables:
+        VERSION: "item_ad_rate_scoring_${parameters.timestamp}"
+        MODEL_HDFS_PATH: "${parameters.item_ad_rate_scoring_v1_1_base_path}/output/${parameters.date}"
+      metrics:
+      - cnt:
+          alias: "v1_1_model_item_coverage_cnt_1"
+      - adrate_avg:
+          alias: "v1_1_model_reco_average_adrate_1"
+    depends_on:
+    - "adrate_scoring_v1_1_1"
+    disable: false
+    group_id: "eval.eval_dag"
+  adrate_scoring_2:
+    task_type: "spark2"
+    inherit: "adrate_scoring_template"
+    depends_on:
+    - "eval_dag_start_task"
+    disable: false
+    group_id: "eval.eval_dag"
+  adrate_scoring_shepherd_2:
+    task_type: "shepherd_metrics"
+    inherit: "adrate_scoring_shepherd_template"
+    depends_on:
+    - "adrate_scoring_2"
+    disable: false
+    group_id: "eval.eval_dag"
+  adrate_scoring_beyond_2:
+    task_type: "spark2"
+    inherit: "adrate_scoring_template"
+    arguments:
+      scoring-base-output-path: "${parameters.item_ad_rate_scoring_beyond_itemreco_base_path}"
+      candidate-label: "beyond_v1_itemreco"
+      ad-rate-reco-score-threshold: 0.34
+    depends_on:
+    - "eval_dag_start_task"
+    disable: false
+    group_id: "eval.eval_dag"
+  adrate_scoring_beyond_shepherd_2:
+    task_type: "shepherd_metrics"
+    inherit: "adrate_scoring_shepherd_template"
+    settings:
+      variables:
+        VERSION: "item_ad_rate_scoring_${parameters.timestamp}"
+        MODEL_HDFS_PATH: "${parameters.item_ad_rate_scoring_beyond_itemreco_base_path}/output/${parameters.date}"
+        metrics:
+        - cnt:
+            alias: "v2_beyond_model_item_coverage_cnt_2"
+        - adrate_avg:
+            alias: "v2_beyond_model_reco_average_adrate_2"
+    depends_on:
+    - "adrate_scoring_beyond_2"
+    disable: false
+    group_id: "eval.eval_dag"
+  adrate_scoring_v1_1_2:
+    task_type: "spark2"
+    inherit: "adrate_scoring_template"
+    arguments:
+      scoring-base-output-path: "${parameters.item_ad_rate_scoring_v1_1_base_path}"
+      item-reco-model-base-input-path: "${parameters.item_ad_rate_for_low_adrate_model_path_prefix}"
+      ad-rate-reco-model-base-input-path: "${parameters.item_ad_rate_for_low_adrate_model_path_prefix}"
+      adrate-version: "v1_1"
+      candidate-label: "low_adrate"
+      num-coalesce-partitions: 400
+      item-reco-score-threshold: 0
+    depends_on:
+    - "eval_dag_start_task"
+    disable: false
+    group_id: "eval.eval_dag"
+  adrate_scoring_v1_1_shepherd_2:
+    task_type: "shepherd_metrics"
+    inherit: "adrate_scoring_shepherd_template"
+    settings:
+      variables:
+        VERSION: "item_ad_rate_scoring_${parameters.timestamp}"
+        MODEL_HDFS_PATH: "${parameters.item_ad_rate_scoring_v1_1_base_path}/output/${parameters.date}"
+      metrics:
+      - cnt:
+          alias: "v1_1_model_item_coverage_cnt_2"
+      - adrate_avg:
+          alias: "v1_1_model_reco_average_adrate_2"
+    depends_on:
+    - "adrate_scoring_v1_1_2"
+    disable: false
+    group_id: "eval.eval_dag"
+  eval_dag_end_task:
+    task_type: "bash"
+    settings:
+      bash_command: "echo '== TASK WITH ID eval_dag END =='"
+    depends_on:
+    - "adrate_scoring_beyond_shepherd_2"
+    - "adrate_scoring_v1_1_shepherd_1"
+    - "adrate_scoring_beyond_shepherd_1"
+    - "adrate_scoring_v1_1_shepherd_2"
+    - "adrate_scoring_shepherd_1"
+    - "adrate_scoring_shepherd_2"
+    group_id: "eval.eval_dag"
+  eval_dag_eval_start_task:
+    task_type: "bash"
+    settings:
+      bash_command: "echo '== TASK WITH ID eval_dag_eval START =='"
+    depends_on:
+    - "eval_dag_end_task"
+    group_id: "eval.eval_dag_eval"
+  dag_eval_health_check:
+    task_type: "python"
+    settings:
+      python_callable: "submodules.ammo.util.ammo_util.model_health_check"
+      timeout: "'${sys.timedelta(minutes=3)}'"
+    arguments:
+      project_name: "pls_suggested_adrate"
+      model_name: "model name"
+      dag_run_id: "'{{run_id}}'"
+      health_checks:
+      - metricsName: "v2_beyond_model_item_coverage_cnt_1"
+        expression: "value > production"
+        placeholder:
+          production: 230000000
+    depends_on:
+    - "eval_dag_eval_start_task"
+    group_id: "eval.eval_dag_eval"
+  eval_dag_eval_end_task:
+    task_type: "bash"
+    settings:
+      bash_command: "echo '== TASK WITH ID eval_dag_eval END =='"
+    depends_on:
+    - "dag_eval_health_check"
+    group_id: "eval.eval_dag_eval"
+  eval_end_task:
+    task_type: "bash"
+    settings:
+      bash_command: "echo '== TASK WITH ID eval END =='"
+    depends_on:
+    - "adrate_scoring_shepherd_template"
+    - "eval_dag_eval_end_task"
+    - "adrate_scoring_template"
+    group_id: "eval"
