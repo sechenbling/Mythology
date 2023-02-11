@@ -1,5 +1,11 @@
 package cn.scut.app.util.transfer.transformer.evaluation;
 
+import static cn.scut.app.util.transfer.constant.EvalStageFields.EXPERIMENT_ID;
+import static cn.scut.app.util.transfer.constant.EvalStageFields.EXPRESSION;
+import static cn.scut.app.util.transfer.constant.EvalStageFields.GROUP_TRAIN;
+import static cn.scut.app.util.transfer.constant.EvalStageFields.HEALTH_CHECKS;
+import static cn.scut.app.util.transfer.constant.EvalStageFields.METRICS;
+import static cn.scut.app.util.transfer.constant.EvalStageFields.NAME;
 import static cn.scut.app.util.transfer.constant.TransferTaskFields.AMMO;
 import static cn.scut.app.util.transfer.constant.TransferTaskFields.ARGUMENTS;
 import static cn.scut.app.util.transfer.constant.TransferTaskFields.DEPENDS_ON;
@@ -7,12 +13,6 @@ import static cn.scut.app.util.transfer.constant.TransferTaskFields.DISABLE;
 import static cn.scut.app.util.transfer.constant.TransferTaskFields.INHERIT;
 import static cn.scut.app.util.transfer.constant.TransferTaskFields.SETTINGS;
 import static cn.scut.app.util.transfer.constant.TransferTaskFields.TASK_TYPE;
-import static cn.scut.app.util.transfer.constant.EvalStageFields.EXPERIMENT_ID;
-import static cn.scut.app.util.transfer.constant.EvalStageFields.EXPRESSION;
-import static cn.scut.app.util.transfer.constant.EvalStageFields.GROUP_TRAIN;
-import static cn.scut.app.util.transfer.constant.EvalStageFields.HEALTH_CHECKS;
-import static cn.scut.app.util.transfer.constant.EvalStageFields.METRICS;
-import static cn.scut.app.util.transfer.constant.EvalStageFields.NAME;
 
 import cn.scut.app.util.transfer.context.TransferContext;
 import cn.scut.app.util.transfer.entity.output.layer.impl.TransferGroup;

@@ -13,7 +13,7 @@ public class ProjectServiceImpl implements ProjectService {
 
   @Override
   @Transactional(rollbackOn = Exception.class)
-  public ProjectResponse createProject(String projectName, ProjectRequest request){
+  public ProjectResponse createProject(String projectName, ProjectRequest request) {
     return new ProjectResponse(1L, projectName, request.getDescription(),
         request.getVersion(),
         request.getDomain(), request.getOwners());

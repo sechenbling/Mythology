@@ -1,7 +1,5 @@
 package cn.scut.app.util.transfer.transformer.evaluation;
 
-import static cn.scut.app.util.transfer.constant.TransferTaskFields.DEPENDS_ON;
-import static cn.scut.app.util.transfer.constant.TransferTaskFields.DISABLE;
 import static cn.scut.app.util.transfer.constant.EvalStageFields.DELIMITER;
 import static cn.scut.app.util.transfer.constant.EvalStageFields.GROUP_DAG;
 import static cn.scut.app.util.transfer.constant.EvalStageFields.GROUP_MODEL;
@@ -10,6 +8,8 @@ import static cn.scut.app.util.transfer.constant.EvalStageFields.RENDER;
 import static cn.scut.app.util.transfer.constant.EvalStageFields.SOURCE_DAG;
 import static cn.scut.app.util.transfer.constant.EvalStageFields.TASKS;
 import static cn.scut.app.util.transfer.constant.EvalStageFields.TEMPLATE;
+import static cn.scut.app.util.transfer.constant.TransferTaskFields.DEPENDS_ON;
+import static cn.scut.app.util.transfer.constant.TransferTaskFields.DISABLE;
 
 import cn.scut.app.util.transfer.context.TransferContext;
 import cn.scut.app.util.transfer.entity.output.layer.impl.TransferGroup;

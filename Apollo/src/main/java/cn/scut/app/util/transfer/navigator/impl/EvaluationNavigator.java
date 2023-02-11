@@ -1,6 +1,5 @@
 package cn.scut.app.util.transfer.navigator.impl;
 
-import static cn.scut.app.util.transfer.constant.TransferConfigs.START;
 import static cn.scut.app.util.transfer.constant.EvalStageFields.GROUP_TRAIN;
 import static cn.scut.app.util.transfer.constant.EvalStageFields.LEVEL;
 import static cn.scut.app.util.transfer.constant.EvalStageFields.SOURCE;
@@ -8,6 +7,7 @@ import static cn.scut.app.util.transfer.constant.EvalStageFields.SOURCE_CUSTOMIZ
 import static cn.scut.app.util.transfer.constant.EvalStageFields.SOURCE_DAG;
 import static cn.scut.app.util.transfer.constant.EvalStageFields.SOURCE_MODEL;
 import static cn.scut.app.util.transfer.constant.EvalStageFields.SOURCE_TRAIN;
+import static cn.scut.app.util.transfer.constant.TransferConfigs.START;
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.API.Match;

@@ -1,5 +1,16 @@
 package cn.scut.app.util.transfer.transformer.meta;
 
+import static cn.scut.app.util.transfer.constant.MetaStageFields.DADS_DOMAIN;
+import static cn.scut.app.util.transfer.constant.MetaStageFields.DAGS_AMMO_PARAMS;
+import static cn.scut.app.util.transfer.constant.MetaStageFields.DAGS_AMMO_PARAMS_PROJECT_NAME;
+import static cn.scut.app.util.transfer.constant.MetaStageFields.DAGS_CALLBACK;
+import static cn.scut.app.util.transfer.constant.MetaStageFields.DAGS_EMAIL;
+import static cn.scut.app.util.transfer.constant.MetaStageFields.DAGS_OWNER;
+import static cn.scut.app.util.transfer.constant.MetaStageFields.DAGS_PARAMS;
+import static cn.scut.app.util.transfer.constant.MetaStageFields.DAGS_SCHEDULER;
+import static cn.scut.app.util.transfer.constant.MetaStageFields.DAGS_START_DATE;
+import static cn.scut.app.util.transfer.constant.MetaStageFields.DAGS_TAGS;
+import static cn.scut.app.util.transfer.constant.MetaStageFields.DAGS_VERSION;
 import static cn.scut.app.util.transfer.constant.TransferCallbackFields.DAG_ON_FAILURE;
 import static cn.scut.app.util.transfer.constant.TransferCallbackFields.DAG_ON_FAILURE_CALLBACK;
 import static cn.scut.app.util.transfer.constant.TransferCallbackFields.DAG_ON_SUCCESS;
@@ -16,17 +27,6 @@ import static cn.scut.app.util.transfer.constant.TransferCallbackFields.START_ON
 import static cn.scut.app.util.transfer.constant.TransferCallbackFields.START_ON_RETRY_CALLBACK;
 import static cn.scut.app.util.transfer.constant.TransferCallbackFields.START_ON_SUCCESS;
 import static cn.scut.app.util.transfer.constant.TransferCallbackFields.START_ON_SUCCESS_CALLBACK;
-import static cn.scut.app.util.transfer.constant.MetaStageFields.DADS_DOMAIN;
-import static cn.scut.app.util.transfer.constant.MetaStageFields.DAGS_AMMO_PARAMS;
-import static cn.scut.app.util.transfer.constant.MetaStageFields.DAGS_AMMO_PARAMS_PROJECT_NAME;
-import static cn.scut.app.util.transfer.constant.MetaStageFields.DAGS_CALLBACK;
-import static cn.scut.app.util.transfer.constant.MetaStageFields.DAGS_EMAIL;
-import static cn.scut.app.util.transfer.constant.MetaStageFields.DAGS_OWNER;
-import static cn.scut.app.util.transfer.constant.MetaStageFields.DAGS_PARAMS;
-import static cn.scut.app.util.transfer.constant.MetaStageFields.DAGS_SCHEDULER;
-import static cn.scut.app.util.transfer.constant.MetaStageFields.DAGS_START_DATE;
-import static cn.scut.app.util.transfer.constant.MetaStageFields.DAGS_TAGS;
-import static cn.scut.app.util.transfer.constant.MetaStageFields.DAGS_VERSION;
 
 import cn.scut.app.util.transfer.context.TransferContext;
 import cn.scut.app.util.transfer.entity.output.TransferParams;

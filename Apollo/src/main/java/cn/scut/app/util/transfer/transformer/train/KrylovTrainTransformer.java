@@ -1,10 +1,5 @@
 package cn.scut.app.util.transfer.transformer.train;
 
-import static cn.scut.app.util.transfer.constant.TransferTaskFields.AMMO;
-import static cn.scut.app.util.transfer.constant.TransferTaskFields.ARGUMENTS;
-import static cn.scut.app.util.transfer.constant.TransferTaskFields.DEPENDS_ON;
-import static cn.scut.app.util.transfer.constant.TransferTaskFields.DISABLE;
-import static cn.scut.app.util.transfer.constant.TransferTaskFields.TASK_TYPE;
 import static cn.scut.app.util.transfer.constant.AmmoFields.MODEL_INSTANCE;
 import static cn.scut.app.util.transfer.constant.AmmoFields.MODEL_NAME;
 import static cn.scut.app.util.transfer.constant.AmmoFields.PROJECT_NAME;
@@ -15,6 +10,11 @@ import static cn.scut.app.util.transfer.constant.TrainStageFields.GROUP_KRYLOV;
 import static cn.scut.app.util.transfer.constant.TrainStageFields.RENDER;
 import static cn.scut.app.util.transfer.constant.TrainStageFields.SETTINGS;
 import static cn.scut.app.util.transfer.constant.TrainStageFields.SETTINGS_EMS_PARAMS;
+import static cn.scut.app.util.transfer.constant.TransferTaskFields.AMMO;
+import static cn.scut.app.util.transfer.constant.TransferTaskFields.ARGUMENTS;
+import static cn.scut.app.util.transfer.constant.TransferTaskFields.DEPENDS_ON;
+import static cn.scut.app.util.transfer.constant.TransferTaskFields.DISABLE;
+import static cn.scut.app.util.transfer.constant.TransferTaskFields.TASK_TYPE;
 
 import cn.scut.app.util.transfer.context.TransferContext;
 import cn.scut.app.util.transfer.entity.output.layer.impl.TransferGroup;

@@ -16,7 +16,8 @@ public interface ProjectService {
 
   PageResultResponse<ProjectResponse> getPageableProjects(Pageable pageable);
 
-  PageResultResponse<ProjectResponse> searchProjects(String projectName, String domain, String owner,
+  PageResultResponse<ProjectResponse> searchProjects(String projectName, String domain,
+      String owner,
       Pageable pageable);
 
   ProjectResponse deleteProject(String projectName, String createBy);

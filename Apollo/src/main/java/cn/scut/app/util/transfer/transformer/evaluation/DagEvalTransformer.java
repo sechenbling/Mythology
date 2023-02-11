@@ -1,8 +1,5 @@
 package cn.scut.app.util.transfer.transformer.evaluation;
 
-import static cn.scut.app.util.transfer.constant.TransferTaskFields.ARGUMENTS;
-import static cn.scut.app.util.transfer.constant.TransferTaskFields.SETTINGS;
-import static cn.scut.app.util.transfer.constant.TransferTaskFields.TASK_TYPE;
 import static cn.scut.app.util.transfer.constant.EvalStageFields.DAG_EVAL_HEALTH_CHECK;
 import static cn.scut.app.util.transfer.constant.EvalStageFields.DAG_RUN_ID;
 import static cn.scut.app.util.transfer.constant.EvalStageFields.EXPRESSION;
@@ -10,6 +7,9 @@ import static cn.scut.app.util.transfer.constant.EvalStageFields.GROUP_DAG_EVAL;
 import static cn.scut.app.util.transfer.constant.EvalStageFields.HEALTH_CHECKS;
 import static cn.scut.app.util.transfer.constant.EvalStageFields.METRICS;
 import static cn.scut.app.util.transfer.constant.EvalStageFields.NAME;
+import static cn.scut.app.util.transfer.constant.TransferTaskFields.ARGUMENTS;
+import static cn.scut.app.util.transfer.constant.TransferTaskFields.SETTINGS;
+import static cn.scut.app.util.transfer.constant.TransferTaskFields.TASK_TYPE;
 
 import cn.scut.app.util.transfer.context.TransferContext;
 import cn.scut.app.util.transfer.entity.output.layer.impl.TransferGroup;

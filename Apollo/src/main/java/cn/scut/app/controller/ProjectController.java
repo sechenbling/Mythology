@@ -31,21 +31,21 @@ public class ProjectController {
 
   @Autowired
   public void setDependencyB(ProjectService projectService) {
-    this.projectService=projectService;
+    this.projectService = projectService;
   }
 
   @PostMapping("/{projectName}")
   public ResponseEntity<CommonResponse> createProject(
       @PathVariable("projectName") String projectName,
       @RequestBody ProjectRequest request) {
-    return ResponseHandler.handle(projectService.createProject(projectName,request));
+    return ResponseHandler.handle(projectService.createProject(projectName, request));
   }
 
   @PutMapping(value = "/{projectName}")
   public ResponseEntity<CommonResponse> updateProject(
       @PathVariable("projectName") String projectName,
       @RequestBody @Valid ProjectRequest request) {
-    return ResponseHandler.handle(projectService.updateProject(projectName,request));
+    return ResponseHandler.handle(projectService.updateProject(projectName, request));
   }
 
   @GetMapping("/{projectName}")
@@ -64,7 +64,8 @@ public class ProjectController {
       @RequestParam(value = "projectName", required = false) String projectName,
       @RequestParam(value = "domain", required = false) String domain,
       @RequestParam(value = "owner", required = false) String owner, Pageable pageable) {
-    return ResponseHandler.handle(projectService.searchProjects(projectName, domain, owner, pageable));
+    return ResponseHandler.handle(
+        projectService.searchProjects(projectName, domain, owner, pageable));
   }
 
   @DeleteMapping("/{projectName}")

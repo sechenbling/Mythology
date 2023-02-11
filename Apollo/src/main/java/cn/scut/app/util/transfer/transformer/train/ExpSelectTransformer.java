@@ -1,11 +1,5 @@
 package cn.scut.app.util.transfer.transformer.train;
 
-import static cn.scut.app.util.transfer.constant.TransferTaskFields.ARGUMENTS;
-import static cn.scut.app.util.transfer.constant.TransferTaskFields.DEPENDS_ON;
-import static cn.scut.app.util.transfer.constant.TransferTaskFields.DISABLE;
-import static cn.scut.app.util.transfer.constant.TransferTaskFields.INHERIT;
-import static cn.scut.app.util.transfer.constant.TransferTaskFields.SETTINGS;
-import static cn.scut.app.util.transfer.constant.TransferTaskFields.TASK_TYPE;
 import static cn.scut.app.util.transfer.constant.TrainStageFields.CONDITION;
 import static cn.scut.app.util.transfer.constant.TrainStageFields.CONDITIONS;
 import static cn.scut.app.util.transfer.constant.TrainStageFields.CREATE_BY;
@@ -15,6 +9,12 @@ import static cn.scut.app.util.transfer.constant.TrainStageFields.MODEL_INSTANCE
 import static cn.scut.app.util.transfer.constant.TrainStageFields.MODEL_NAME;
 import static cn.scut.app.util.transfer.constant.TrainStageFields.PROJECT_NAME;
 import static cn.scut.app.util.transfer.constant.TrainStageFields.SORT;
+import static cn.scut.app.util.transfer.constant.TransferTaskFields.ARGUMENTS;
+import static cn.scut.app.util.transfer.constant.TransferTaskFields.DEPENDS_ON;
+import static cn.scut.app.util.transfer.constant.TransferTaskFields.DISABLE;
+import static cn.scut.app.util.transfer.constant.TransferTaskFields.INHERIT;
+import static cn.scut.app.util.transfer.constant.TransferTaskFields.SETTINGS;
+import static cn.scut.app.util.transfer.constant.TransferTaskFields.TASK_TYPE;
 
 import cn.scut.app.util.transfer.context.TransferContext;
 import cn.scut.app.util.transfer.entity.output.layer.impl.TransferGroup;

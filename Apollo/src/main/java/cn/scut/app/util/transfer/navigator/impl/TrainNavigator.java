@@ -1,9 +1,9 @@
 package cn.scut.app.util.transfer.navigator.impl;
 
-import static cn.scut.app.util.transfer.constant.TransferConfigs.START;
 import static cn.scut.app.util.transfer.constant.TrainStageFields.EXPERIMENT;
 import static cn.scut.app.util.transfer.constant.TrainStageFields.MODEL_SELECTION;
 import static cn.scut.app.util.transfer.constant.TrainStageFields.TYPE;
+import static cn.scut.app.util.transfer.constant.TransferConfigs.START;
 
 import cn.scut.app.util.transfer.context.TransferContext;
 import cn.scut.app.util.transfer.entity.output.layer.impl.TransferGroup;
