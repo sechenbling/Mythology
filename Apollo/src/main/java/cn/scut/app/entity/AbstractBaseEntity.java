@@ -20,9 +20,6 @@ public abstract class AbstractBaseEntity {
   @Transient
   private static final String FORMAT = "yyyy-MM-dd HH:mm:ss";
 
-  @Column(nullable = false, columnDefinition = "VARCHAR(30)")
-  private String createBy;
-
   @CreatedDate
   @DateTimeFormat(pattern = FORMAT)
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = FORMAT)
