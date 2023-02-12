@@ -1,4 +1,4 @@
-package cn.scut.app.request;
+package cn.scut.app.entity.request;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,9 +11,9 @@ import lombok.Data;
 public class ProjectRequest {
 
   @NotNull
-  private String       domain;
-  private String       description;
-  private String       version;
+  private String      domain;
+  private String      description;
+  private String      version;
   @NotNull
   @NotBlank
   private String      createBy;

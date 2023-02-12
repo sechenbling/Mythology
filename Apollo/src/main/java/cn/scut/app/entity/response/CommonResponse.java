@@ -1,4 +1,4 @@
-package cn.scut.app.response;
+package cn.scut.app.entity.response;
 
 import lombok.Builder;
 import lombok.Data;

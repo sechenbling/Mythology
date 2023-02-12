@@ -1,4 +1,4 @@
-package cn.scut.app.response;
+package cn.scut.app.entity.response;
 
 import java.util.ArrayList;
 import java.util.List;

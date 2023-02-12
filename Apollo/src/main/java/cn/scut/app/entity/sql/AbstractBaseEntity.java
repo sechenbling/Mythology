@@ -1,4 +1,4 @@
-package cn.scut.app.entity;
+package cn.scut.app.entity.sql;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.vladmihalcea.hibernate.type.json.JsonType;
@@ -19,6 +19,9 @@ public abstract class AbstractBaseEntity {
 
   @Transient
   private static final String FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+  @Column(nullable = false, columnDefinition = "VARCHAR(30)")
+  private String createBy;
 
   @CreatedDate
   @DateTimeFormat(pattern = FORMAT)

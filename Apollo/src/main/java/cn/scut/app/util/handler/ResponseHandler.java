@@ -1,6 +1,6 @@
 package cn.scut.app.util.handler;
 
-import cn.scut.app.response.CommonResponse;
+import cn.scut.app.entity.response.CommonResponse;
 import org.springframework.http.ResponseEntity;
 
 public class ResponseHandler {

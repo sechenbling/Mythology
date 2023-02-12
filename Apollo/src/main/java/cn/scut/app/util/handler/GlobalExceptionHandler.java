@@ -1,7 +1,7 @@
 package cn.scut.app.util.handler;
 
 import cn.scut.app.exception.CustomException;
-import cn.scut.app.response.CommonResponse;
+import cn.scut.app.entity.response.CommonResponse;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;

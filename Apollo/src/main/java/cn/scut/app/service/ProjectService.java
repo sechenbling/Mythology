@@ -1,9 +1,8 @@
 package cn.scut.app.service;
 
-import cn.scut.app.request.ProjectRequest;
-import cn.scut.app.response.CommonResponse;
-import cn.scut.app.response.PageResultResponse;
-import cn.scut.app.response.ProjectResponse;
+import cn.scut.app.entity.request.ProjectRequest;
+import cn.scut.app.entity.response.PageResultResponse;
+import cn.scut.app.entity.response.ProjectResponse;
 import org.springframework.data.domain.Pageable;
 
 public interface ProjectService {

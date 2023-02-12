@@ -1,4 +1,4 @@
-package cn.scut.app.entity;
+package cn.scut.app.entity.sql;
 
 
 import java.util.ArrayList;
@@ -9,8 +9,6 @@ import java.util.stream.Collectors;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -40,7 +38,7 @@ public class ProjectEntity extends AbstractBaseEntity {
   private String projectName;
 
   @Column(nullable = false, columnDefinition = "VARCHAR(32)")
-  private String versionFormat;
+  private String version;
 
   @Column(columnDefinition = "TEXT")
   @Basic(fetch = FetchType.LAZY)
@@ -49,23 +47,12 @@ public class ProjectEntity extends AbstractBaseEntity {
   @Column(nullable = false, columnDefinition = "VARCHAR(30)")
   private String domain;
 
-
-  @Column(columnDefinition = "INTEGER UNSIGNED")
-  private Long trainingConfigId;
-
-  @Column(columnDefinition = "INTEGER UNSIGNED")
-  private Long deployConfigId;
-
-  @Version
-  @Column(columnDefinition = "INTEGER UNSIGNED")
-  private Long version = 0L;
-
   @Column(columnDefinition = "TEXT")
   private String owners;
 
-  public List<String> getOwnerList() {
-    return new ArrayList<>(getOwnersSet());
-  }
+  @Version
+  @Column(columnDefinition = "INTEGER UNSIGNED")
+  private Long versionFormat = 0L;
 
   private Set<String> getOwnersSet() {
     return Arrays.stream(owners.split(","))
